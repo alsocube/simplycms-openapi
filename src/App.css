@@ -336,10 +336,18 @@
 }
 
 .masonry-grid {
-  display: grid;
+  align-items: flex-start;
+  display: flex;
   gap: 1.25rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   flex: 0 0 auto;
+}
+
+.masonry-column {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
 }
 
 .post-card {
@@ -513,11 +521,10 @@
 
   .masonry-grid {
     gap: 0.8rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .post-card {
-    margin-bottom: 0.8rem;
+  .masonry-column {
+    gap: 0.8rem;
   }
 
   .post-details {
@@ -552,7 +559,7 @@
   }
 
   .masonry-grid {
-    grid-template-columns: 1fr;
+    gap: 0.8rem;
   }
 
   .site-footer {

@@ -66,8 +66,31 @@ function getUploadErrorMessage(status: number) {
   return `The upload failed (${status}). Please try again.`
 }
 
+function getMasonryColumnCount() {
+  if (window.matchMedia('(max-width: 440px)').matches) {
+    return 1
+  }
+
+  if (window.matchMedia('(max-width: 760px)').matches) {
+    return 2
+  }
+
+  return 4
+}
+
+function distributePosts(posts: Post[], columnCount: number) {
+  const columns = Array.from({ length: columnCount }, () => [] as Post[])
+
+  posts.forEach((post, index) => {
+    columns[index % columnCount].push(post)
+  })
+
+  return columns
+}
+
 function App() {
   const [posts, setPosts] = useState<Post[]>([])
+  const [masonryColumnCount, setMasonryColumnCount] = useState(getMasonryColumnCount)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reloadCount, setReloadCount] = useState(0)
@@ -78,6 +101,19 @@ function App() {
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
   const uploadDialogRef = useRef<HTMLDialogElement>(null)
   const submissionInProgressRef = useRef(false)
+  const masonryColumns = distributePosts(posts, masonryColumnCount)
+
+  useEffect(() => {
+    const updateMasonryColumnCount = () => {
+      setMasonryColumnCount(getMasonryColumnCount())
+    }
+
+    window.addEventListener('resize', updateMasonryColumnCount)
+
+    return () => {
+      window.removeEventListener('resize', updateMasonryColumnCount)
+    }
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -263,26 +299,30 @@ function App() {
 
         {!isLoading && !error && posts.length > 0 && (
           <div className="masonry-grid">
-            {posts.map((post) => (
-              <article className="post-card" key={post.post_id}>
-                <img
-                  className="post-image"
-                  src={post.file_path}
-                  alt={post.title ? `${post.title} by ${post.display_name}` : post.file_name}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="post-details">
-                  <div className="post-byline">
-                    <span className="post-avatar" aria-hidden="true">
-                      {post.display_name.charAt(0).toUpperCase()}
-                    </span>
-                    <span>{post.display_name}</span>
-                  </div>
-                  <h2>{post.title}</h2>
-                  {post.contents && <p className="post-content">{post.contents}</p>}
-                </div>
-              </article>
+            {masonryColumns.map((column, columnIndex) => (
+              <div className="masonry-column" key={columnIndex}>
+                {column.map((post) => (
+                  <article className="post-card" key={post.post_id}>
+                    <img
+                      className="post-image"
+                      src={post.file_path}
+                      alt={post.title ? `${post.title} by ${post.display_name}` : post.file_name}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="post-details">
+                      <div className="post-byline">
+                        <span className="post-avatar" aria-hidden="true">
+                          {post.display_name.charAt(0).toUpperCase()}
+                        </span>
+                        <span>{post.display_name}</span>
+                      </div>
+                      <h2>{post.title}</h2>
+                      {post.contents && <p className="post-content">{post.contents}</p>}
+                    </div>
+                  </article>
+                ))}
+              </div>
             ))}
           </div>
         )}
