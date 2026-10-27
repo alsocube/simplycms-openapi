@@ -336,8 +336,9 @@
 }
 
 .masonry-grid {
-  columns: 4 230px;
-  column-gap: 1.25rem;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   flex: 0 0 auto;
 }
 
@@ -346,9 +347,8 @@
   border: 1px solid #d65e3e;
   /* border-radius: 14px; */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  break-inside: avoid;  
-  display: inline-block;
-  margin: 0 0 1.25rem;
+  display: block;
+  margin: 0;
   overflow: hidden;
   width: 100%;
 }
@@ -512,8 +512,8 @@
   }
 
   .masonry-grid {
-    columns: 2 180px;
-    column-gap: 0.8rem;
+    gap: 0.8rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .post-card {
@@ -552,7 +552,7 @@
   }
 
   .masonry-grid {
-    columns: 1;
+    grid-template-columns: 1fr;
   }
 
   .site-footer {
