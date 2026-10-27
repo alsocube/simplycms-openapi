@@ -183,6 +183,11 @@ function App() {
     const form = event.currentTarget
     const formData = new FormData(form)
     const image = formData.get('file')
+    const contents = formData.get('contents')
+
+    if (typeof contents === 'string' && contents.trim() === '') {
+      formData.delete('contents')
+    }
 
     if (!(image instanceof File)) {
       setUploadError('Choose an image to upload.')
