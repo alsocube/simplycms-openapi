@@ -99,7 +99,11 @@ function App() {
           throw new Error('The posts API returned data in an unexpected format.')
         }
 
-        setPosts(data)
+        const sortedPosts = [...data].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        )
+
+        setPosts(sortedPosts)
       } catch (loadError) {
         if (controller.signal.aborted) {
           return
