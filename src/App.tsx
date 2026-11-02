@@ -1,5 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import './App.css'
+import LoginPage from './LoginPage'
+import { getStoredToken, getStoredUser } from './auth'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
@@ -89,6 +91,8 @@ function distributePosts(posts: Post[], columnCount: number) {
 }
 
 function App() {
+  const [pathname, setPathname] = useState(window.location.pathname)
+  const [currentUser, setCurrentUser] = useState<string | null>(getStoredUser)
   const [posts, setPosts] = useState<Post[]>([])
   const [masonryColumnCount, setMasonryColumnCount] = useState(getMasonryColumnCount)
   const [isLoading, setIsLoading] = useState(true)
@@ -104,6 +108,14 @@ function App() {
   const masonryColumns = distributePosts(posts, masonryColumnCount)
 
   useEffect(() => {
+    const handlePopState = () => setPathname(window.location.pathname)
+
+    window.addEventListener('popstate', handlePopState)
+
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  useEffect(() => {
     const updateMasonryColumnCount = () => {
       setMasonryColumnCount(getMasonryColumnCount())
     }
@@ -116,6 +128,11 @@ function App() {
   }, [])
 
   useEffect(() => {
+    if (pathname === '/login') {
+      setIsLoading(false)
+      return
+    }
+
     const controller = new AbortController()
 
     async function loadPosts() {
@@ -160,7 +177,7 @@ function App() {
     void loadPosts()
 
     return () => controller.abort()
-  }, [reloadCount])
+  }, [pathname, reloadCount])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -235,6 +252,16 @@ function App() {
     }
   }
 
+  function navigate(path: string) {
+    window.history.pushState({}, '', path)
+    setPathname(path)
+    setCurrentUser(getStoredUser())
+  }
+
+  if (pathname === '/login') {
+    return <LoginPage onNavigate={navigate} />
+  }
+
   return (
     <main className="page-shell">
       <header className="site-header">
@@ -245,18 +272,27 @@ function App() {
           <span>simplycms</span>
         </a>
         <p className="header-note">A little inspiration, collected.</p>
-        <button
-          className="share-button"
-          onClick={() => {
-            setUploadError(null)
-            setUploadSuccess(null)
-            uploadDialogRef.current?.showModal()
-          }}
-          type="button"
-        >
-          <span aria-hidden="true">+</span>
-          Share a post
-        </button>
+        <div className="header-actions">
+          {getStoredToken() ? (
+            <span className="welcome-message">Welcome, {currentUser ?? 'user'}</span>
+          ) : (
+            <button className="header-link" onClick={() => navigate('/login')} type="button">
+              Log in
+            </button>
+          )}
+          <button
+            className="share-button"
+            onClick={() => {
+              setUploadError(null)
+              setUploadSuccess(null)
+              uploadDialogRef.current?.showModal()
+            }}
+            type="button"
+          >
+            <span aria-hidden="true">+</span>
+            Share a post
+          </button>
+        </div>
       </header>
 
       <section className="gallery-section" aria-labelledby="gallery-title">

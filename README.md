@@ -12,6 +12,17 @@ Deploy your own Vite project with Vercel.
 
 _Live Example: https://vite-react-example.vercel.app_
 
+### Login API
+
+The frontend login form sends either `{"email":"...","password":"..."}`
+or `{"username":"...","password":"..."}` to `POST /login`, based on whether
+the identifier looks like an email address. The API response must contain a
+non-empty `remember_token`, `token`, or `access_token` value. The token is
+saved in `localStorage` only when Remember me is checked. When it is not
+checked, the token is stored in `sessionStorage`, so a refresh keeps the user
+logged in while closing the browser session removes it. The gallery displays a
+welcome message for an active login instead of the Log in button.
+
 ### Deploying From Your Terminal
 
 You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
