@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import './App.css'
+import AdminDashboard from './AdminDashboard'
 import LoginPage from './LoginPage'
 import { getStoredToken, getStoredUser } from './auth'
 
@@ -128,7 +129,14 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (pathname === '/login') {
+    if (pathname === '/admin' && !getStoredToken()) {
+      window.history.replaceState({}, '', '/login')
+      setPathname('/login')
+    }
+  }, [pathname])
+
+  useEffect(() => {
+    if (pathname === '/login' || pathname === '/admin') {
       setIsLoading(false)
       return
     }
@@ -262,6 +270,10 @@ function App() {
     return <LoginPage onNavigate={navigate} />
   }
 
+  if (pathname === '/admin') {
+    return <AdminDashboard currentUser={currentUser} onNavigate={navigate} />
+  }
+
   return (
     <main className="page-shell">
       <header className="site-header">
@@ -274,7 +286,12 @@ function App() {
         <p className="header-note">A little inspiration, collected.</p>
         <div className="header-actions">
           {getStoredToken() ? (
-            <span className="welcome-message">Welcome, {currentUser ?? 'user'}</span>
+            <>
+              <span className="welcome-message">Welcome, {currentUser ?? 'user'}</span>
+              <button className="header-link" onClick={() => navigate('/admin')} type="button">
+                Admin
+              </button>
+            </>
           ) : (
             <button className="header-link" onClick={() => navigate('/login')} type="button">
               Log in
