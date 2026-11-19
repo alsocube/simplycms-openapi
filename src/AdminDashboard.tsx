@@ -258,6 +258,9 @@ function AdminDashboard({ onNavigate, currentUser }: AdminDashboardProps) {
         </a>
         <div className="header-actions">
           <span className="welcome-message">Welcome, {currentUser ?? 'admin'}</span>
+          <button className="header-link" onClick={() => onNavigate('/admin/content')} type="button">
+            Manage content
+          </button>
           <button className="header-link" onClick={() => onNavigate('/')} type="button">
             View gallery
           </button>

@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import './App.css'
 import AdminDashboard from './AdminDashboard'
+import AdminContent from './AdminContent'
 import LoginPage from './LoginPage'
 import { getStoredToken, getStoredUser } from './auth'
 
@@ -129,14 +130,14 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (pathname === '/admin' && !getStoredToken()) {
+    if ((pathname === '/admin' || pathname === '/admin/content') && !getStoredToken()) {
       window.history.replaceState({}, '', '/login')
       setPathname('/login')
     }
   }, [pathname])
 
   useEffect(() => {
-    if (pathname === '/login' || pathname === '/admin') {
+    if (pathname === '/login' || pathname === '/admin' || pathname === '/admin/content') {
       setIsLoading(false)
       return
     }
@@ -272,6 +273,10 @@ function App() {
 
   if (pathname === '/admin') {
     return <AdminDashboard currentUser={currentUser} onNavigate={navigate} />
+  }
+
+  if (pathname === '/admin/content') {
+    return <AdminContent currentUser={currentUser} onNavigate={navigate} />
   }
 
   return (
