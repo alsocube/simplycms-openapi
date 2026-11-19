@@ -351,7 +351,7 @@ function AdminContent({ onNavigate, currentUser }: AdminContentProps) {
                   {filteredMedia.map((item) => (
                     <article className="admin-media-card" key={item.key}>
                       {/\.(png|jpe?g|gif|webp|avif)$/i.test(item.key) && (
-                        <img src={item.key.startsWith('http') ? item.key : `https://api.simplycms.my.id/${item.key.replace(/^\/+/, '')}`} alt="" loading="lazy" />
+                        <img src={item.key.startsWith('http') ? item.key : `https://cdn.simplycms.my.id/${item.key.replace(/^\/+/, '')}`} alt="" loading="lazy" />
                       )}
                       <strong title={item.key}>{item.key.split('/').pop()}</strong>
                       <span>{formatBytes(item.size)} · {formatDate(item.lastModified ?? '')}</span>
